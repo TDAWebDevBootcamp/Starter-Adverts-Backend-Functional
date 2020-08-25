@@ -26,9 +26,26 @@ app.use(cors());
 // adding morgan to log HTTP requests
 app.use(morgan('combined'));
 
-// defining an endpoint to return all ads
+// defining CRUD operations
 app.get('/', async (req, res) => {
   res.send(await Ad.find());
+});
+
+app.post('/', async (req, res) => {
+  const newAd = req.body;
+  const ad = new Ad(newAd);
+  await ad.save();
+  res.send({ message: 'New ad inserted.' });
+});
+
+app.delete('/:id', async (req, res) => {
+  await Ad.deleteOne({ _id: ObjectId(req.params.id) })
+  res.send({ message: 'Ad removed.' });
+});
+
+app.put('/:id', async (req, res) => {
+  await Ad.findOneAndUpdate({ _id: ObjectId(req.params.id)}, req.body )
+  res.send({ message: 'Ad updated.' });
 });
 
 // starting the server
