@@ -1,2 +1,4 @@
-# Week 12 Auth Starter Code
+# Auth Starter Code
+
+Starter code for the auth session
  
