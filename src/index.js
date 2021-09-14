@@ -10,7 +10,10 @@ const mongoose = require('mongoose');
 const { Ad } = require('../models/ad');
 const { User } = require('../models/user');
 
-mongoose.connect('mongodb://localhost/adsdatabase');
+mongoose.connect(
+  'mongodb+srv://dbUser:O2dJC3Bsz8mECoeM@cluster0.csfuv.mongodb.net/ads?retryWrites=true&w=majority',
+  { useNewUrlParser: true, useUnifiedTopology: true }
+  );
 
 // defining the Express app
 const app = express();
@@ -26,6 +29,27 @@ app.use(cors());
 
 // adding morgan to log HTTP requests
 app.use(morgan('combined'));
+
+app.post('/auth', async (req, res) =>{
+  const user = await User.findOne({username: req.body.username})
+  if(!user){
+    return res.sendStatus(401)
+  }
+  if (req.body.password !== user.password){
+    return res.sendStatus(403)
+  }
+  res.send({token: "secretstring"})
+
+})
+
+app.use((req,res, next) => {
+  const authHeader = req.headers['authorization'];
+  if (authHeader === "secretstring") {
+    next()
+  } else {
+    res.sendStatus(403)
+  }
+});
 
 // defining CRUD operations
 app.get('/', async (req, res) => {
