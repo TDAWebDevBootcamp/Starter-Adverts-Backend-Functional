@@ -6,11 +6,13 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
+const port = process.env.PORT || 3001;
+const dburi = processenv.DBURI;
 
 const { Ad } = require('../models/ad');
 const { User } = require('../models/user');
 
-mongoose.connect('mongodb://localhost/adsdatabase');
+mongoose.connect(dburi);
 
 // defining the Express app
 const app = express();
@@ -50,8 +52,8 @@ app.put('/:id', async (req, res) => {
 });
 
 // starting the server
-app.listen(3001, () => {
-  console.log('listening on port 3001');
+app.listen(port, () => {
+  console.log(`listening on port ${port}`);
 });
 
 var db = mongoose.connection;
