@@ -11,9 +11,8 @@ const port = process.env.PORT || 3001;
 const dburi = process.env.DBURI;
 
 const { Ad } = require("./models/ad");
-const { User } = require("./models/user");
 
-mongoose.connect(dburi, { useNewUrlParser: true });
+mongoose.connect(dburi, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
 
 // defining the Express app
 const app = express();
@@ -36,8 +35,13 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/", async (req, res) => {
+  console.log(req.body);
   const newAd = req.body;
-  const ad = new Ad(newAd);
+  const ad = new Ad({
+    name: newAd.name,
+    price: newAd.price,
+  });
+  console.log(ad)
   await ad.save();
   res.send({ message: "New ad inserted." });
 });
@@ -48,16 +52,17 @@ app.delete("/:id", async (req, res) => {
 });
 
 app.put("/:id", async (req, res) => {
-  await Ad.findOneAndUpdate({ _id: ObjectId(req.params.id) }, req.body);
+  console.log(`req.body: ${JSON.stringify(req.body)}`);  
+  const newAd = req.body;
+  await Ad.findOneAndUpdate({ _id: ObjectId(req.params.id) }, newAd);
   res.send({ message: "Ad updated." });
 });
 
-// starting the server
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
 
-var db = mongoose.connection;
+const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function callback() {
   console.log("Database connected!");
