@@ -11,6 +11,7 @@ const port = process.env.PORT || 3001;
 const dburi = process.env.DBURI;
 
 const { Ad } = require("./models/ad");
+const { User } = require("./models/user");
 
 mongoose.connect(dburi, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
 
@@ -58,11 +59,27 @@ app.put("/:id", async (req, res) => {
   res.send({ message: "Ad updated." });
 });
 
+// login 
+
+app.post("/auth", async (req, res) => {
+  const { username, password } = req.body;
+  console.log(username, password);
+  const user = await User.findOne({ username });
+  console.log(user);
+  if (user && user.password === password) {
+    console.log("User logged in.");
+    res.send({ message: "User logged in." }).status(200);
+  } else {
+    res.send({ message: "Invalid credentials." }).status(401);
+  }
+});
+
+// starting the server
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
 
-const db = mongoose.connection;
+var db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function callback() {
   console.log("Database connected!");
